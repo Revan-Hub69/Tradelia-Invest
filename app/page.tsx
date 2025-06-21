@@ -54,8 +54,8 @@ const Home = () => {
 
   return (
     <main className={styles.main}>
-      <h1 className={styles.title}>Benvenuto su Tradelia Invest</h1>
-      <p className={styles.subtitle}>
+      <h1 className="title">Benvenuto su Tradelia Invest</h1>
+      <p className="subtitle">
         Tradelia Invest è una piattaforma educativa per la gestione di strategie e investimenti con l’assistente AI.
       </p>
 
@@ -82,13 +82,13 @@ const Home = () => {
         {message && <p className={styles.message}>{message}</p>}
       </form>
 
-      <div className={styles.contacts}>
+      <div className="contacts">
         <a href="mailto:info@tradelia.org" rel="noopener noreferrer">info@tradelia.org</a>
         <a href="https://www.tradelia.org" target="_blank" rel="noopener noreferrer">www.tradelia.org</a>
         <a href="https://wa.me/393311881090" target="_blank" rel="noopener noreferrer">WhatsApp 3311881090</a>
       </div>
 
-      <p className={styles.disclaimer}>
+      <p className="disclaimer">
         Tradelia Invest fornisce esclusivamente informazioni a scopo formativo.
         Nessun consiglio finanziario personalizzato.
         Si invita a valutare attentamente i rischi prima di operare sui mercati.
