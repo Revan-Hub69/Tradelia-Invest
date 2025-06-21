@@ -1,0 +1,23 @@
+<svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- SYMBOL: Cerchio con linea crescita -->
+  <circle cx="25" cy="25" r="20" fill="url(#grad)" />
+  <path d="M15 30 L22 22 L28 26 L35 18" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- TEXT: Tradelia with gradient -->
+  <text x="55" y="32" font-family="Helvetica, Arial, sans-serif" font-size="24" font-weight="bold" fill="url(#grad)">
+    TRADELIA
+  </text>
+
+  <!-- TEXT: INVEST in light gray -->
+  <text x="160" y="32" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#F3F4F6" letter-spacing="1">
+    INVEST
+  </text>
+
+  <!-- GRADIENT DEFINITION -->
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="200" y2="0">
+      <stop offset="0%" stop-color="#1D4ED8"/>
+      <stop offset="100%" stop-color="#60A5FA"/>
+    </linearGradient>
+  </defs>
+</svg>
