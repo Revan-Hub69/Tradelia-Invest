@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import styles from "./PaginaLogin.module.css";
 
 export default function PaginaLogin() {
   const router = useRouter();
@@ -10,14 +11,13 @@ export default function PaginaLogin() {
   const [messaggio, setMessaggio] = useState("");
   const [caricamento, setCaricamento] = useState(false);
 
-  // Controlla se l'utente è già loggato
   useEffect(() => {
     const checkSession = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (session) {
-        router.push("/"); // reindirizza alla home
+        router.push("/"); // se già loggato -> home
       }
     };
     checkSession();
@@ -29,29 +29,29 @@ export default function PaginaLogin() {
     if (error) {
       setMessaggio(`Errore: ${error.message}`);
     } else {
-      setMessaggio("✅ Controlla la tua email! Ti abbiamo inviato un link magico per accedere.");
+      setMessaggio(" Controlla la tua email! Ti abbiamo inviato un link di conferma per accedere.");
     }
     setCaricamento(false);
   };
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-4">
-      <h1 className="text-3xl font-bold mb-4">Accedi</h1>
+    <main className={styles.main}>
+      <h1 className={styles.title}>Accedi a Tradelia Invest</h1>
       <input
         type="email"
         placeholder="La tua email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="border p-2 rounded mb-2 w-64"
+        className={styles.input}
       />
       <button
         onClick={handleLogin}
-        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        className={styles.button}
         disabled={caricamento || !email}
       >
         {caricamento ? "Invio in corso..." : "Invia link magico"}
       </button>
-      {messaggio && <p className="mt-4 text-center">{messaggio}</p>}
+      {messaggio && <p className={styles.message}>{messaggio}</p>}
     </main>
   );
 }
