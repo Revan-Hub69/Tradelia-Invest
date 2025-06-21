@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import styles from "./file-viewer.module.css";
 
@@ -22,52 +24,47 @@ const FileViewer = () => {
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      fetchFiles();
-    }, 1000);
-
+    fetchFiles();
+    const interval = setInterval(fetchFiles, 5000);
     return () => clearInterval(interval);
   }, []);
 
   const fetchFiles = async () => {
-    const resp = await fetch("/api/assistants/files", {
-      method: "GET",
-    });
+    const resp = await fetch("/api/assistants/files", { method: "GET" });
     const data = await resp.json();
     setFiles(data);
   };
 
-  const handleFileDelete = async (fileId) => {
+  const handleFileDelete = async (fileId: string) => {
     await fetch("/api/assistants/files", {
       method: "DELETE",
       body: JSON.stringify({ fileId }),
     });
+    fetchFiles();
   };
 
-  const handleFileUpload = async (event) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const data = new FormData();
-    if (event.target.files.length < 0) return;
-    data.append("file", event.target.files[0]);
-    await fetch("/api/assistants/files", {
-      method: "POST",
-      body: data,
-    });
+    if (event.target.files && event.target.files.length > 0) {
+      data.append("file", event.target.files[0]);
+      await fetch("/api/assistants/files", {
+        method: "POST",
+        body: data,
+      });
+      fetchFiles();
+    }
   };
 
   return (
     <div className={styles.fileViewer}>
-      <div
-        className={`${styles.filesList} ${
-          files.length !== 0 ? styles.grow : ""
-        }`}
-      >
+      <div className={`${styles.filesList} ${files.length ? styles.grow : ""}`}>
         {files.length === 0 ? (
-          <div className={styles.title}>Attach files to test file search</div>
+          <div className={styles.title}>Nessun file caricato</div>
         ) : (
           files.map((file) => (
             <div key={file.file_id} className={styles.fileEntry}>
               <div className={styles.fileName}>
-                <span className={styles.fileName}>{file.filename}</span>
+                <span>{file.filename}</span>
                 <span className={styles.fileStatus}>{file.status}</span>
               </div>
               <span onClick={() => handleFileDelete(file.file_id)}>
@@ -79,14 +76,13 @@ const FileViewer = () => {
       </div>
       <div className={styles.fileUploadContainer}>
         <label htmlFor="file-upload" className={styles.fileUploadBtn}>
-          Attach files
+          Carica un file
         </label>
         <input
           type="file"
           id="file-upload"
           name="file-upload"
           className={styles.fileUploadInput}
-          multiple
           onChange={handleFileUpload}
         />
       </div>
