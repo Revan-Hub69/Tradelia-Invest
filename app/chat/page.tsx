@@ -5,25 +5,27 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import Chat from "@/app/components/chat";
 
-export default function ChatPage() {
-  const [user, setUser] = useState(null);
+export default function PaginaChat() {
+  const [utente, setUtente] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         router.push("/login");
       } else {
-        setUser(user);
+        setUtente(user);
       }
     };
     getUser();
-  }, []);
+  }, [router]);
 
-  if (!user) {
-    return <p>Loading...</p>;
+  if (!utente) {
+    return <p>Caricamento in corso...</p>;
   }
 
-  return <Chat userId={user.id} />;
+  return <Chat userId={utente.id} />;
 }
