@@ -1,0 +1,63 @@
+/* Container principale del widget */
+.widget {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.05);
+  max-width: 900px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Titolo del widget */
+.title {
+  font-size: 2em;
+  font-weight: 700;
+  color: #0a2540;
+  text-align: center;
+  margin: 0;
+}
+
+/* Contenitore pulsanti */
+.actionsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Pulsante azione */
+.actionButton {
+  background: linear-gradient(to right, #0a2540, #1e3a5f);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 220px;
+  text-align: center;
+}
+
+.actionButton:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(to right, #1e3a5f, #0a2540);
+}
+
+/* Responsive: bottoni a colonna su schermi piccoli */
+@media (max-width: 768px) {
+  .actionsContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .actionButton {
+    width: 100%;
+    max-width: 400px;
+  }
+}
