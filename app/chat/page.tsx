@@ -6,8 +6,6 @@ import ChatHeader from "@/components/ChatHeader";
 import MessageList from "@/components/MessageList";
 import MessageInput from "@/components/MessageInput";
 import { AssistantStream } from "openai/lib/AssistantStream";
-import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
-import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/runs/runs";
 
 export default function ChatPage() {
   const userId = "TODO_USER_ID"; // pass userId dinamico qui!
@@ -35,7 +33,11 @@ export default function ChatPage() {
       { method: "POST", body: JSON.stringify({ content: text }) }
     );
     const stream = AssistantStream.fromReadableStream(response.body);
-    handleStream(stream);
+    stream.on("textCreated", () => appendMessage("assistant", ""));
+    stream.on("textDelta", (delta) => delta.value && appendToLast(delta.value));
+    stream.on("event", (e) => {
+      if (e.event === "thread.run.completed") setInputDisabled(false);
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -45,14 +47,6 @@ export default function ChatPage() {
     setMessages((p) => [...p, { role: "user", text: userInput }]);
     setUserInput("");
     setInputDisabled(true);
-  };
-
-  const handleStream = (stream: AssistantStream) => {
-    stream.on("textCreated", () => appendMessage("assistant", ""));
-    stream.on("textDelta", (delta) => delta.value && appendToLast(delta.value));
-    stream.on("event", (event) => {
-      if (event.event === "thread.run.completed") setInputDisabled(false);
-    });
   };
 
   const appendMessage = (role: string, text: string) => {
