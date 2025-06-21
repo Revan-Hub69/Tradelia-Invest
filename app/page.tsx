@@ -30,12 +30,13 @@ export default function HomePage() {
           </a>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 text-sm text-blue-600">
+        {/* CONTATTI PREMIUM CON COLORI */}
+        <div className="mt-8 flex flex-col gap-3 text-sm">
           <a
             href="mailto:info@tradelia.org"
             className="flex items-center justify-center gap-2 hover:underline"
           >
-            <Mail className="w-4 h-4" /> info@tradelia.org
+            <Mail className="w-4 h-4 text-blue-600" /> info@tradelia.org
           </a>
           <a
             href="https://www.tradelia.org"
@@ -43,7 +44,7 @@ export default function HomePage() {
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 hover:underline"
           >
-            <Globe className="w-4 h-4" /> www.tradelia.org
+            <Globe className="w-4 h-4 text-teal-600" /> www.tradelia.org
           </a>
           <a
             href="https://wa.me/393311881090"
@@ -51,11 +52,12 @@ export default function HomePage() {
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 hover:underline"
           >
-            <MessageCircle className="w-4 h-4" /> WhatsApp 3311881090
+            <MessageCircle className="w-4 h-4 text-green-600" /> WhatsApp 3311881090
           </a>
         </div>
 
-        <p className="mt-6 text-center text-xs text-red-600 font-semibold">
+        {/* DISCLAIMER NEUTRO */}
+        <p className="mt-6 text-center text-xs text-gray-500 font-semibold">
           ⚠️ Tradelia Invest fornisce esclusivamente informazioni a scopo formativo.
           Nessun consiglio finanziario personalizzato. Consulta sempre un consulente
           finanziario qualificato prima di investire denaro reale. Valuta attentamente i rischi.
