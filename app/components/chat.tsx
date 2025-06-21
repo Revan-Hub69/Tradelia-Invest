@@ -13,30 +13,26 @@ type MessageProps = {
   text: string;
 };
 
-const UserMessage = ({ text }: { text: string }) => {
-  return <div className={styles.userMessage}>{text}</div>;
-};
+const UserMessage = ({ text }: { text: string }) => (
+  <div className={styles.userMessage}>{text}</div>
+);
 
-const AssistantMessage = ({ text }: { text: string }) => {
-  return (
-    <div className={styles.assistantMessage}>
-      <Markdown>{text}</Markdown>
-    </div>
-  );
-};
+const AssistantMessage = ({ text }: { text: string }) => (
+  <div className={styles.assistantMessage}>
+    <Markdown>{text}</Markdown>
+  </div>
+);
 
-const CodeMessage = ({ text }: { text: string }) => {
-  return (
-    <div className={styles.codeMessage}>
-      {text.split("\n").map((line, index) => (
-        <div key={index}>
-          <span>{`${index + 1}. `}</span>
-          {line}
-        </div>
-      ))}
-    </div>
-  );
-};
+const CodeMessage = ({ text }: { text: string }) => (
+  <div className={styles.codeMessage}>
+    {text.split("\n").map((line, index) => (
+      <div key={index}>
+        <span>{`${index + 1}. `}</span>
+        {line}
+      </div>
+    ))}
+  </div>
+);
 
 const Message = ({ role, text }: MessageProps) => {
   switch (role) {
@@ -58,14 +54,13 @@ type ChatProps = {
 };
 
 const Chat = ({
-  functionCallHandler = () => Promise.resolve(""), // default to return empty string
+  functionCallHandler = () => Promise.resolve(""),
 }: ChatProps) => {
   const [userInput, setUserInput] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<MessageProps[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [threadId, setThreadId] = useState("");
 
-  // automatically scroll to bottom of chat
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -74,7 +69,6 @@ const Chat = ({
     scrollToBottom();
   }, [messages]);
 
-  // create a new threadID when chat component created
   useEffect(() => {
     const createThread = async () => {
       const res = await fetch(`/api/assistants/threads`, {
@@ -86,93 +80,75 @@ const Chat = ({
     createThread();
   }, []);
 
-  const sendMessage = async (text) => {
+  const sendMessage = async (text: string) => {
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
         method: "POST",
-        body: JSON.stringify({
-          content: text,
-        }),
+        body: JSON.stringify({ content: text }),
       }
     );
     const stream = AssistantStream.fromReadableStream(response.body);
     handleReadableStream(stream);
   };
 
-  const submitActionResult = async (runId, toolCallOutputs) => {
+  const submitActionResult = async (
+    runId: string,
+    toolCallOutputs: { output: string; tool_call_id: string }[]
+  ) => {
     const response = await fetch(
       `/api/assistants/threads/${threadId}/actions`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          runId: runId,
-          toolCallOutputs: toolCallOutputs,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ runId, toolCallOutputs }),
       }
     );
     const stream = AssistantStream.fromReadableStream(response.body);
     handleReadableStream(stream);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!userInput.trim()) return;
     sendMessage(userInput);
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { role: "user", text: userInput },
-    ]);
+    setMessages((prev) => [...prev, { role: "user", text: userInput }]);
     setUserInput("");
     setInputDisabled(true);
     scrollToBottom();
   };
 
-  /* Stream Event Handlers */
+  // === STREAM EVENT HANDLERS ===
 
-  // textCreated - create new assistant message
   const handleTextCreated = () => {
     appendMessage("assistant", "");
   };
 
-  // textDelta - append text to last assistant message
-  const handleTextDelta = (delta) => {
-    if (delta.value != null) {
-      appendToLastMessage(delta.value);
-    };
-    if (delta.annotations != null) {
-      annotateLastMessage(delta.annotations);
-    }
+  const handleTextDelta = (delta: any) => {
+    if (delta.value != null) appendToLastMessage(delta.value);
+    if (delta.annotations != null) annotateLastMessage(delta.annotations);
   };
 
-  // imageFileDone - show image in chat
-  const handleImageFileDone = (image) => {
+  const handleImageFileDone = (image: any) => {
     appendToLastMessage(`\n![${image.file_id}](/api/files/${image.file_id})\n`);
-  }
+  };
 
-  // toolCallCreated - log new tool call
-  const toolCallCreated = (toolCall) => {
-    if (toolCall.type != "code_interpreter") return;
+  const toolCallCreated = (toolCall: any) => {
+    if (toolCall.type !== "code_interpreter") return;
     appendMessage("code", "");
   };
 
-  // toolCallDelta - log delta and snapshot for the tool call
-  const toolCallDelta = (delta, snapshot) => {
-    if (delta.type != "code_interpreter") return;
+  const toolCallDelta = (delta: any) => {
+    if (delta.type !== "code_interpreter") return;
     if (!delta.code_interpreter.input) return;
     appendToLastMessage(delta.code_interpreter.input);
   };
 
-  // handleRequiresAction - handle function call
   const handleRequiresAction = async (
     event: AssistantStreamEvent.ThreadRunRequiresAction
   ) => {
     const runId = event.data.id;
     const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
-    // loop over tool calls and call function handler
     const toolCallOutputs = await Promise.all(
       toolCalls.map(async (toolCall) => {
         const result = await functionCallHandler(toolCall);
@@ -183,24 +159,16 @@ const Chat = ({
     submitActionResult(runId, toolCallOutputs);
   };
 
-  // handleRunCompleted - re-enable the input form
   const handleRunCompleted = () => {
     setInputDisabled(false);
   };
 
   const handleReadableStream = (stream: AssistantStream) => {
-    // messages
     stream.on("textCreated", handleTextCreated);
     stream.on("textDelta", handleTextDelta);
-
-    // image
     stream.on("imageFileDone", handleImageFileDone);
-
-    // code interpreter
     stream.on("toolCallCreated", toolCallCreated);
     stream.on("toolCallDelta", toolCallDelta);
-
-    // events without helpers yet (e.g. requires_action and run.done)
     stream.on("event", (event) => {
       if (event.event === "thread.run.requires_action")
         handleRequiresAction(event);
@@ -208,45 +176,35 @@ const Chat = ({
     });
   };
 
-  /*
-    =======================
-    === Utility Helpers ===
-    =======================
-  */
+  // === UTILITY ===
 
-  const appendToLastMessage = (text) => {
-    setMessages((prevMessages) => {
-      const lastMessage = prevMessages[prevMessages.length - 1];
-      const updatedLastMessage = {
-        ...lastMessage,
-        text: lastMessage.text + text,
-      };
-      return [...prevMessages.slice(0, -1), updatedLastMessage];
+  const appendToLastMessage = (text: string) => {
+    setMessages((prev) => {
+      const last = prev[prev.length - 1];
+      const updatedLast = { ...last, text: last.text + text };
+      return [...prev.slice(0, -1), updatedLast];
     });
   };
 
-  const appendMessage = (role, text) => {
-    setMessages((prevMessages) => [...prevMessages, { role, text }]);
+  const appendMessage = (role: "user" | "assistant" | "code", text: string) => {
+    setMessages((prev) => [...prev, { role, text }]);
   };
 
-  const annotateLastMessage = (annotations) => {
-    setMessages((prevMessages) => {
-      const lastMessage = prevMessages[prevMessages.length - 1];
-      const updatedLastMessage = {
-        ...lastMessage,
-      };
+  const annotateLastMessage = (annotations: any[]) => {
+    setMessages((prev) => {
+      const last = prev[prev.length - 1];
+      const updatedLast = { ...last };
       annotations.forEach((annotation) => {
-        if (annotation.type === 'file_path') {
-          updatedLastMessage.text = updatedLastMessage.text.replaceAll(
+        if (annotation.type === "file_path") {
+          updatedLast.text = updatedLast.text.replaceAll(
             annotation.text,
             `/api/files/${annotation.file_path.file_id}`
           );
         }
-      })
-      return [...prevMessages.slice(0, -1), updatedLastMessage];
+      });
+      return [...prev.slice(0, -1), updatedLast];
     });
-    
-  }
+  };
 
   return (
     <div className={styles.chatContainer}>
@@ -256,23 +214,16 @@ const Chat = ({
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <form
-        onSubmit={handleSubmit}
-        className={`${styles.inputForm} ${styles.clearfix}`}
-      >
+      <form onSubmit={handleSubmit} className={styles.inputForm}>
         <input
           type="text"
           className={styles.input}
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
-          placeholder="Enter your question"
+          placeholder="Scrivi la tua domanda..."
         />
-        <button
-          type="submit"
-          className={styles.button}
-          disabled={inputDisabled}
-        >
-          Send
+        <button type="submit" className={styles.button} disabled={inputDisabled}>
+          Invia
         </button>
       </form>
     </div>
