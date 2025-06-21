@@ -1,23 +1,23 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Warnings from "./components/warnings";
-import { assistantId } from "./assistant-config";
+import { ASSISTANT_ID } from "./openai";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Assistants API Quickstart",
-  description: "A quickstart template using the Assistants API with OpenAI",
+  title: "Tradelia Invest",
+  description: "La piattaforma per investimenti e strategie con AI",
   icons: {
-    icon: "/openai.svg",
+    icon: "/favicon.png",
   },
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="it">
       <body className={inter.className}>
-        {assistantId ? children : <Warnings />}
-        <img className="logo" src="/openai.svg" alt="OpenAI Logo" />
+        {ASSISTANT_ID ? children : <Warnings />}
       </body>
     </html>
   );
