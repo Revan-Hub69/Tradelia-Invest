@@ -5,7 +5,7 @@ type ChatProps = {
 export default function Chat({ userId }: ChatProps) {
   return (
     <div>
-      {/* Sostituisci con la tua logica */}
+      {/* Qui va la logica vera */}
       Chat per User ID: {userId}
     </div>
   );
