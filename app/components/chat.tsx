@@ -1,16 +1,23 @@
-"use client";
+""use client";
 
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./chat.module.css";
 import { AssistantStream } from "openai/lib/AssistantStream";
 import Markdown from "react-markdown";
-// @ts-expect-error - no types for this yet
+// @ts-expect-error
 import { AssistantStreamEvent } from "openai/resources/beta/assistants/assistants";
 import { RequiredActionFunctionToolCall } from "openai/resources/beta/threads/runs/runs";
 
 type MessageProps = {
   role: "user" | "assistant" | "code";
   text: string;
+};
+
+type ChatProps = {
+  userId: string;
+  functionCallHandler?: (
+    toolCall: RequiredActionFunctionToolCall
+  ) => Promise<string>;
 };
 
 const UserMessage = ({ text }: { text: string }) => (
@@ -47,13 +54,8 @@ const Message = ({ role, text }: MessageProps) => {
   }
 };
 
-type ChatProps = {
-  functionCallHandler?: (
-    toolCall: RequiredActionFunctionToolCall
-  ) => Promise<string>;
-};
-
 const Chat = ({
+  userId,
   functionCallHandler = () => Promise.resolve(""),
 }: ChatProps) => {
   const [userInput, setUserInput] = useState("");
@@ -73,12 +75,13 @@ const Chat = ({
     const createThread = async () => {
       const res = await fetch(`/api/assistants/threads`, {
         method: "POST",
+        body: JSON.stringify({ userId }),
       });
       const data = await res.json();
       setThreadId(data.threadId);
     };
     createThread();
-  }, []);
+  }, [userId]);
 
   const sendMessage = async (text: string) => {
     const response = await fetch(
@@ -117,8 +120,6 @@ const Chat = ({
     setInputDisabled(true);
     scrollToBottom();
   };
-
-  // === STREAM EVENT HANDLERS ===
 
   const handleTextCreated = () => {
     appendMessage("assistant", "");
@@ -175,8 +176,6 @@ const Chat = ({
       if (event.event === "thread.run.completed") handleRunCompleted();
     });
   };
-
-  // === UTILITY ===
 
   const appendToLastMessage = (text: string) => {
     setMessages((prev) => {
