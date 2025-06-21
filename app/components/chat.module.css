@@ -3,86 +3,101 @@
   flex-direction: column-reverse;
   height: 100%;
   width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .inputForm {
   display: flex;
   width: 100%;
-  padding: 10px;
-  padding-bottom: 40px;
+  padding: 20px 10px;
   order: 1;
+  background: #ffffff;
+  border-top: 1px solid #e0e6ed;
 }
 
 .input {
   flex-grow: 1;
   padding: 16px 24px;
   margin-right: 10px;
-  border-radius: 60px;
-  border: 2px solid transparent;
+  border-radius: 50px;
+  border: 2px solid #e0e6ed;
   font-size: 1em;
-  background-color: #efefef;
+  background-color: #f5f7fa;
+  transition: all 0.2s ease;
 }
 
 .input:focus {
-  outline: none !important;
-  border-color: #000;
-  background-color: white;
+  outline: none;
+  border-color: #0a2540;
+  background-color: #ffffff;
 }
 
 .button {
-  padding: 8px 24px;
-  background-color: #000;
-  color: white;
+  padding: 12px 30px;
+  background: linear-gradient(to right, #0a2540, #1e3a5f);
+  color: #ffffff;
   border: none;
   font-size: 1em;
-  border-radius: 60px; /* Removed duplicate border-radius property */
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background: linear-gradient(to right, #1e3a5f, #0a2540);
+  transform: translateY(-2px);
 }
 
 .button:disabled {
-  background-color: lightgrey;
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 30px 20px;
   display: flex;
   flex-direction: column;
   order: 2;
-  white-space: pre-wrap;
 }
 
 .userMessage,
 .assistantMessage,
 .codeMessage {
-  margin: 8px 0;
-  padding: 8px 16px;
-  align-self: flex-start;
-  border-radius: 15px;
-  max-width: 80%;
+  margin: 10px 0;
+  padding: 14px 20px;
+  border-radius: 16px;
+  max-width: 75%;
   overflow-wrap: break-word;
-}
-
-.assistantMessage img {
-  max-width: 100%;
-  margin: 8px 0px 8px 0px;
-  border-radius: 8px;
+  line-height: 1.6;
 }
 
 .userMessage {
   align-self: flex-end;
-  color: #fff;
-  background-color: #000;
+  color: #ffffff;
+  background: linear-gradient(to right, #0a2540, #1e3a5f);
 }
 
 .assistantMessage {
-  background-color: #efefef;
+  align-self: flex-start;
+  background-color: #f5f7fa;
+  color: #0a2540;
+}
+
+.assistantMessage img {
+  max-width: 100%;
+  margin: 10px 0;
+  border-radius: 8px;
 }
 
 .codeMessage {
-  padding: 10px 16px;
-  background-color: #e9e9e9;
+  align-self: flex-start;
+  background-color: #f0f4f8;
   font-family: monospace;
+  font-size: 0.95em;
   counter-reset: line;
 }
 
@@ -92,5 +107,5 @@
 
 .codeMessage span {
   color: #b8b8b8;
-  margin-right: 8px;
+  margin-right: 10px;
 }
